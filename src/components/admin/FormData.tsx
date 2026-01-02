@@ -1,16 +1,21 @@
 "use client"
 
 import * as React from "react"
+//import komponen dialog
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "../ui/dialog"
+// import komponen ui tombol dan input
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
+//import context admin event
 import { useAdminEvents } from "../../context/AdminEventsContext"
 
 export default function FormData() {
+  //ambil fungsi set Events dari contect
   const { setEvents } = useAdminEvents()
+  // sstate untk buka tutup dialog
   const [open, setOpen] = React.useState(false)
-
+// state menyimpan data form
   const [form, setForm] = React.useState({
     name: "",
     category: "",
@@ -20,15 +25,15 @@ export default function FormData() {
     description: "",
     image: "",
   })
-
+// handler perubahan input
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target
     setForm((s) => ({ ...s, [name]: value }))
   }
-
+// handler submit form
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-
+// data event baru
     const newEvent = {
       id: Date.now().toString(),
       name: form.name,
@@ -39,13 +44,15 @@ export default function FormData() {
       description: form.description,
       image: form.image,
     }
-
+//tambah data event baru ke daftar event  dan tutup dialog
     setEvents((prev) => [newEvent, ...prev])
     setOpen(false)
+    // reset form
     setForm({ name: "", category: "", date: "", price: "", location: "", description: "", image: "" })
   }
 
   return (
+    // komponen dialog buat event baru
     <Dialog open={open} onOpenChange={setOpen}>
       <form onSubmit={handleSubmit}>
         <DialogTrigger asChild>

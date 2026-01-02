@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useLocation, NavLink } from "react-router-dom"
-
+// komponen sidebar
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +14,7 @@ import {
   SidebarRail,
 } from "../../components/ui/sidebar"
 
-// This is sample data.
+// sampel data sidebar
 const data = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
   navMain: [
@@ -34,11 +34,13 @@ const data = {
     },
   ],
 }
-
+// komponen sidebar aplikasi 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  //lokasi route saat ini
   const location = useLocation()
 
   return (
+    //struktur sidebar
     <Sidebar {...props}>
       <SidebarHeader>
         <SidebarMenu>

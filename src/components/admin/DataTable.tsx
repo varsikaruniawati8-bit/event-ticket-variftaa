@@ -1,5 +1,5 @@
 "use client"
-
+// penanda komponen di jalankan di sisi klient
 import * as React from "react"
 import {
   flexRender,
@@ -14,11 +14,11 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
-
+// komponen ui
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-
+// interface data event
 export interface EventItem {
   id: string
   name: string
@@ -29,11 +29,11 @@ export interface EventItem {
   description?: string
   image?: string
 }
-
+// fungsi format ke harga rupiah
 const fmtPrice = (p: number) =>
   p.toLocaleString("id-ID", { style: "currency", currency: "IDR" })
 
-// columns are created inside the component so action callbacks can be captured
+//komponen tabel data
 
 export function DataTable({
   events,
@@ -47,7 +47,7 @@ export function DataTable({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-
+// definnisi kolom tabel
   const columns = React.useMemo<ColumnDef<EventItem>[]>(
     () => [
       {
@@ -92,7 +92,7 @@ export function DataTable({
     ],
     [onEdit, onDelete]
   )
-
+// inisialisai tabel
   const table = useReactTable({
     data: events,
     columns,
