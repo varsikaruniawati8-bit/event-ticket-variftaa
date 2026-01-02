@@ -1,3 +1,4 @@
+//Halaman utama user yang menampilkan katalog event atau daftar produk tiket yang tersedia.
 import { useNavigate } from "react-router-dom"
 import { Button } from "../../components/ui/button"
 import {

@@ -14,7 +14,8 @@ import {
   SidebarRail,
 } from "../../components/ui/sidebar"
 
-// sampel data sidebar
+// sample datanya
+
 const data = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
   navMain: [
@@ -65,8 +66,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     {
-                      /* mark active when current pathname starts with item url
-                         we render NavLink for navigation and also set isActive on the Button */
+                      /* menandai menu sebagai aktif ketika pathname saat ini
+                    diawali dengan URL item
+                    NavLink digunakan untuk navigasi dan status aktif
+                    juga diterapkan pada komponen Button */
                     }
                     <SidebarMenuButton asChild isActive={location.pathname === item.url || location.pathname.startsWith(item.url)}>
                       <NavLink to={item.url} className="block w-full">
