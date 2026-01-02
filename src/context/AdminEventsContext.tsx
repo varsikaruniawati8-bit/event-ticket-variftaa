@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useNavigate } from "react-router-dom"
 import { initialEvents, type EventItem } from "../lib/events"
 
 type AdminEventsContextValue = {
@@ -12,10 +13,11 @@ const AdminEventsContext = React.createContext<AdminEventsContextValue | undefin
 
 export function AdminEventsProvider({ children }: { children: React.ReactNode }) {
   const [events, setEvents] = React.useState<EventItem[]>(initialEvents)
+  const navigate = useNavigate()
 
   const onEdit = (id: string) => {
-    // placeholder
-    alert(`Edit event: ${id}`)
+    // Navigate ke halaman edit dengan id sebagai param
+    navigate(`/admin/events/${id}/edit`)
   }
 
   const onDelete = (id: string) => {
