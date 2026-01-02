@@ -13,11 +13,27 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react"
 // komponen ui
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog"
 // interface data event
 export interface EventItem {
   id: string
@@ -47,6 +63,9 @@ export function DataTable({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
+  const [selectedEventId, setSelectedEventId] = React.useState<string | null>(null)
+  const selectedEvent = events.find((e) => e.id === selectedEventId)
 // definnisi kolom tabel
   const columns = React.useMemo<ColumnDef<EventItem>[]>(
     () => [
@@ -82,7 +101,14 @@ export function DataTable({
               <Button size="sm" variant="outline" onClick={() => onEdit?.(e.id)}>
                 Edit
               </Button>
-              <Button size="sm" variant="destructive" onClick={() => onDelete?.(e.id)}>
+              <Button 
+                size="sm" 
+                variant="destructive" 
+                onClick={() => {
+                  setSelectedEventId(e.id)
+                  setDeleteDialogOpen(true)
+                }}
+              >
                 Hapus
               </Button>
             </div>
@@ -107,70 +133,122 @@ export function DataTable({
   })
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Daftar Event</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-4 mb-4">
-          <Input
-            placeholder="Filter nama..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
-            className="max-w-sm"
-          />
-          <div className="ml-auto text-sm text-muted-foreground">
-            {table.getFilteredRowModel().rows.length} hasil
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Daftar Event</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 mb-4">
+            <Input
+              placeholder="Filter nama..."
+              value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+              onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
+              className="max-w-sm"
+            />
+            <div className="ml-auto text-sm text-muted-foreground">
+              {table.getFilteredRowModel().rows.length} hasil
+            </div>
           </div>
-        </div>
 
-        <div className="overflow-hidden rounded-md border">
-          <table className="w-full table-auto">
-            <thead className="bg-background">
-              {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id}>
-                  {hg.headers.map((header) => (
-                    <th key={header.id} className="p-2 text-left text-sm font-medium">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border-t">
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="p-2 align-top">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
+          <div className="overflow-hidden rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((hg) => (
+                  <TableRow key={hg.id}>
+                    {hg.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
                     ))}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={columns.length} className="p-6 text-center text-sm text-muted-foreground">
-                    No results.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
 
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex items-center justify-between space-x-2 py-4">
+            <div className="text-sm text-muted-foreground">
+              {table.getFilteredRowModel().rows.length} hasil
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => table.previousPage()} 
+                disabled={!table.getCanPreviousPage()}
+                className="gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => table.nextPage()} 
+                disabled={!table.getCanNextPage()}
+                className="gap-1"
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hapus Event</DialogTitle>
+            <DialogDescription>
+              Apakah Anda yakin ingin menghapus event <span className="font-semibold">"{selectedEvent?.name}"</span>? Tindakan ini tidak dapat dibatalkan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (selectedEventId) {
+                  onDelete?.(selectedEventId)
+                  setDeleteDialogOpen(false)
+                  setSelectedEventId(null)
+                }
+              }}
+            >
+              Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
