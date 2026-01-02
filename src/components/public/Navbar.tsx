@@ -1,3 +1,4 @@
+//Komponen navigasi utama pada halaman user yang menampilkan menu seperti Home dan navigasi ke halaman lain.
 import Logo from "../../assets/varifta.jpg"
 import { Link } from "react-router-dom"
 import {

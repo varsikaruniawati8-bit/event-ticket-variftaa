@@ -1,3 +1,4 @@
+//Halaman detail event yang menampilkan informasi lengkap berdasarkan ID event yang dipilih oleh user.
 import { useParams, useNavigate } from "react-router-dom"
 import { Button } from "../../components/ui/button"
 import {

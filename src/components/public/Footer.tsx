@@ -1,3 +1,4 @@
+//Komponen bagian bawah halaman yang menampilkan informasi tambahan seperti copyright atau identitas aplikasi.
 import { Link } from "react-router-dom"
 import { Music, Facebook, Instagram, Twitter, Mail } from "lucide-react"
 

@@ -33,7 +33,7 @@ export interface EventItem {
 const fmtPrice = (p: number) =>
   p.toLocaleString("id-ID", { style: "currency", currency: "IDR" })
 
-// columns are created inside the component so action callbacks can be captured
+// kolom dibuat di dalam komponen agar callback aksi dapat ditangkap
 
 export function DataTable({
   events,

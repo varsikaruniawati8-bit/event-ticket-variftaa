@@ -1,3 +1,4 @@
+//Berisi data dummy event (hardcode) yang digunakan sementara untuk menampilkan katalog event pada halaman Home dan Detail.
 export type EventItem = {
   id: string
   name: string
