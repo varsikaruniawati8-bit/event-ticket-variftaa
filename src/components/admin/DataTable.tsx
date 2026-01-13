@@ -55,10 +55,12 @@ export function DataTable({
   events,
   onEdit,
   onDelete,
+  isDeleting,
 }: {
   events: EventItem[]
   onEdit?: (id: string) => void
   onDelete?: (id: string) => void
+  isDeleting?: boolean
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -234,6 +236,7 @@ export function DataTable({
               Batal
             </Button>
             <Button
+              disabled={isDeleting}
               variant="destructive"
               onClick={() => {
                 if (selectedEventId) {
