@@ -8,6 +8,11 @@ export type EventItem = {
   location: string
   description?: string
   image?: string
+  fullDescription?: string
+  capacity?: number
+  startTime?: string
+  endTime?: string
+  ageRestriction?: string
 }
 
 export const initialEvents: EventItem[] = [
