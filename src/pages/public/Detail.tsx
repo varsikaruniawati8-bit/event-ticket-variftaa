@@ -1,5 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom"
+// useParams untuk mengambil parameter id dari URL
+// useNavigate untuk navigasi halaman
+
 import { Button } from "../../components/ui/button"
+// Komponen Button UI
+
 import {
   Card,
   CardContent,
@@ -7,21 +12,41 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card"
+// Komponen Card untuk layout tampilan
+
 import { ArrowLeft } from "lucide-react"
+// Icon panah kiri
+
 import * as React from "react"
+// React hooks (useState, useEffect)
+
 import api from "../../services/mockapi"
+// API mock untuk mengambil data event
+
 import type { EventItem } from "../../lib/events"
+// Tipe data event
 
 const WHATSAPP_NUMBER = "6282155985785"
+// Nomor WhatsApp tujuan pemesanan
 
 export default function Detail() {
   const { id } = useParams<{ id: string }>()
+  // Mengambil id event dari URL
+
   const navigate = useNavigate()
+  // Hook untuk berpindah halaman
   
   const [event, setEvent] = React.useState<EventItem | null>(null)
+  // State untuk menyimpan data event
+
   const [loading, setLoading] = React.useState(true)
+  // State loading saat data diambil
+
   const [error, setError] = React.useState<string | null>(null)
+  // State untuk menyimpan pesan error
+
   const [ticketCount, setTicketCount] = React.useState(1)
+  // State jumlah tiket
 
   // Fetch event detail by ID
   React.useEffect(() => {
@@ -33,28 +58,39 @@ export default function Detail() {
         // GET single event by ID
         const data = await api.get(`/events/${id}`) as unknown as EventItem
         setEvent(data)
+        // Simpan data event ke state
       } catch (err) {
         console.error("Gagal memuat detail event:", err)
         setError("Event tidak ditemukan atau gagal dimuat.")
       } finally {
         setLoading(false)
+        // Matikan loading setelah proses selesai
       }
     }
 
     if (id) {
       fetchEventDetail()
+      // Jalankan fetch jika id tersedia
     }
   }, [id])
 
   const handleCheckout = () => {
     if (!event) return
-    const total = event.price * ticketCount * 1.1 // include admin fee
+    // Hentikan fungsi jika event belum ada
+
+    const total = event.price * ticketCount * 1.1
+    // Hitung total harga + biaya admin 10%
+
     const message = `Halo, saya ingin memesan/booking ${event.name}.
 Jumlah Tiket: ${ticketCount}
 Harga: Rp ${event.price.toLocaleString("id-ID")} x ${ticketCount}
 Total: Rp ${total.toLocaleString("id-ID")}`
+    // Pesan WhatsApp otomatis
     
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`)
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+    )
+    // Membuka WhatsApp dengan pesan
   }
 
   // Loading state
@@ -77,15 +113,22 @@ Total: Rp ${total.toLocaleString("id-ID")}`
           <h1 className="text-4xl font-bold mb-4">
             {error || "Event Tidak Ditemukan"}
           </h1>
-          <Button onClick={() => navigate("/")}>Kembali ke Beranda</Button>
+          <Button onClick={() => navigate("/")}>
+            Kembali ke Beranda
+          </Button>
         </div>
       </div>
     )
   }
 
   const subtotal = event.price * ticketCount
+  // Harga total tiket tanpa biaya admin
+
   const adminFee = subtotal * 0.1
+  // Biaya admin 10%
+
   const total = subtotal + adminFee
+  // Total akhir pembayaran
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted">
@@ -115,7 +158,9 @@ Total: Rp ${total.toLocaleString("id-ID")}`
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-3xl">{event.name}</CardTitle>
+                    <CardTitle className="text-3xl">
+                      {event.name}
+                    </CardTitle>
                     <CardDescription className="text-lg mt-2">
                       {event.category}
                     </CardDescription>
@@ -144,22 +189,30 @@ Total: Rp ${total.toLocaleString("id-ID")}`
                       })}
                     </p>
                   </div>
+
                   {event.startTime && (
                     <div>
                       <p className="text-sm text-muted-foreground">Waktu Mulai</p>
-                      <p className="font-semibold">{event.startTime} WIB</p>
+                      <p className="font-semibold">
+                        {event.startTime} WIB
+                      </p>
                     </div>
                   )}
+
                   <div>
                     <p className="text-sm text-muted-foreground">Lokasi</p>
                     <p className="font-semibold">{event.location}</p>
                   </div>
+
                   {event.endTime && (
                     <div>
                       <p className="text-sm text-muted-foreground">Waktu Selesai</p>
-                      <p className="font-semibold">{event.endTime} WIB</p>
+                      <p className="font-semibold">
+                        {event.endTime} WIB
+                      </p>
                     </div>
                   )}
+
                   {event.capacity && (
                     <div>
                       <p className="text-sm text-muted-foreground">Kapasitas</p>
@@ -168,10 +221,13 @@ Total: Rp ${total.toLocaleString("id-ID")}`
                       </p>
                     </div>
                   )}
+
                   {event.ageRestriction && (
                     <div>
                       <p className="text-sm text-muted-foreground">Batasan Umur</p>
-                      <p className="font-semibold">{event.ageRestriction}</p>
+                      <p className="font-semibold">
+                        {event.ageRestriction}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -187,54 +243,12 @@ Total: Rp ${total.toLocaleString("id-ID")}`
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Harga Per Tiket</p>
-                  <p className="text-2xl font-bold text-primary">
-                    Rp {event.price.toLocaleString("id-ID")}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Jumlah Tiket</label>
-                  <select 
-                    className="w-full px-3 py-2 border rounded-lg bg-background"
-                    value={ticketCount}
-                    onChange={(e) => setTicketCount(Number(e.target.value))}
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                      <option key={num} value={num}>
-                        {num} Tiket
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="border-t pt-4">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-semibold">
-                      Rp {subtotal.toLocaleString("id-ID")}
-                    </span>
-                  </div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-muted-foreground">Biaya Admin (10%)</span>
-                    <span className="font-semibold">
-                      Rp {adminFee.toLocaleString("id-ID")}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold border-t pt-2">
-                    <span>Total</span>
-                    <span className="text-primary">
-                      Rp {total.toLocaleString("id-ID")}
-                    </span>
-                  </div>
-                </div>
-
-                <Button className="w-full" size="lg" onClick={handleCheckout}>
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={handleCheckout}
+                >
                   Lanjutkan Pembayaran
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Bagikan Event
                 </Button>
               </CardContent>
             </Card>

@@ -1,23 +1,44 @@
 "use client"
 
 import * as React from "react"
+// Hook routing untuk mengambil parameter URL dan navigasi halaman
 import { useParams, useNavigate } from "react-router-dom"
+
+// Komponen UI
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 import { Label } from "../../components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
+
+// Context untuk mengelola data event admin
 import { useAdminEvents } from "../../context/AdminEventsContext"
+
+// Tipe data event
 import type { EventItem } from "../../lib/events"
+
+// API mock untuk request data
 import api from "../../services/mockapi"
 
 export default function EditEvent() {
+  // Mengambil parameter id dari URL
   const { id } = useParams<{ id: string }>()
+
+  // Hook untuk navigasi halaman
   const navigate = useNavigate()
+
+  // Mengambil data events dan setter dari context
   const { events, setEvents } = useAdminEvents()
+
+  // State loading saat submit
   const [isLoading, setIsLoading] = React.useState(false)
+
+  // State loading saat fetch data awal
   const [isFetching, setIsFetching] = React.useState(true)
+
+  // State error
   const [error, setError] = React.useState<string | null>(null)
 
+  // State form untuk menyimpan data event yang diedit
   const [form, setForm] = React.useState<EventItem>({
     id: "",
     name: "",
@@ -29,7 +50,7 @@ export default function EditEvent() {
     image: "",
   })
 
-  // Fetch event dari API saat component mount
+  // Mengambil data event dari API berdasarkan ID saat komponen pertama kali dirender
   React.useEffect(() => {
     const fetchEvent = async () => {
       if (!id) return
@@ -40,11 +61,12 @@ export default function EditEvent() {
       try {
         console.log("Fetching event with id:", id)
         
-        // GET request ke /events/:id
+        // Request GET ke endpoint /events/:id
         const responseData: any = await api.get(`/events/${id}`)
         
         console.log("Event data:", responseData)
 
+        // Mengisi form dengan data dari API
         setForm({
           id: responseData.id,
           name: responseData.name,
@@ -66,14 +88,17 @@ export default function EditEvent() {
     fetchEvent()
   }, [id])
 
+  // Handler perubahan input form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({
       ...prev,
+      // Konversi ke number jika field price
       [name]: name === "price" ? Number(value) : value,
     }))
   }
 
+  // Handler submit form edit event
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -85,7 +110,7 @@ export default function EditEvent() {
     console.log("Updating event:", form)
 
     try {
-      // Data yang akan diupdate
+      // Data yang akan dikirim ke API
       const updateData = {
         name: form.name,
         category: form.category,
@@ -98,12 +123,12 @@ export default function EditEvent() {
 
       console.log("Sending update to API:", updateData)
 
-      // PUT request ke /events/:id
+      // Request PUT ke endpoint /events/:id
       const responseData: any = await api.put(`/events/${id}`, updateData)
 
       console.log("Response from API:", responseData)
 
-      // Update event di state
+      // Data event yang sudah diperbarui
       const updatedEvent = {
         id: responseData.id,
         name: responseData.name,
@@ -115,13 +140,14 @@ export default function EditEvent() {
         image: responseData.image,
       }
 
+      // Update data event di context
       setEvents((prev) =>
         prev.map((e) => (e.id === id ? updatedEvent : e))
       )
 
       console.log("Event updated successfully")
 
-      // Navigate back ke events
+      // Kembali ke halaman daftar event
       navigate("/admin/events")
     } catch (err: any) {
       console.error("Error updating event:", err)
@@ -131,7 +157,7 @@ export default function EditEvent() {
     }
   }
 
-  // Loading state saat fetch data
+  // Tampilan loading saat data event masih diambil
   if (isFetching) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -144,7 +170,7 @@ export default function EditEvent() {
     )
   }
 
-  // Error state
+  // Tampilan error jika event tidak ditemukan
   if (error && !form.id) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -165,6 +191,7 @@ export default function EditEvent() {
 
   return (
     <div>
+      {/* Header halaman */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Edit Event</h1>
         <p className="text-muted-foreground">Ubah data event di bawah ini</p>
@@ -175,15 +202,16 @@ export default function EditEvent() {
           <CardTitle>{form.name}</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Tampilkan error jika ada */}
+          {/* Menampilkan pesan error jika ada */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
               {error}
             </div>
           )}
 
+          {/* Form edit event */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nama */}
+            {/* Nama Event */}
             <div className="grid gap-2">
               <Label htmlFor="name">Nama Event</Label>
               <Input
@@ -278,7 +306,7 @@ export default function EditEvent() {
               />
             </div>
 
-            {/* Actions */}
+            {/* Tombol aksi */}
             <div className="flex gap-3 pt-4">
               <Button
                 type="submit"

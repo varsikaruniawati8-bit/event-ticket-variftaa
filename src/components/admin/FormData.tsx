@@ -1,4 +1,5 @@
-"use client"
+"use client" 
+// Menandakan ini adalah Client Component di Next.js (App Router)
 
 import * as React from "react"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "../ui/dialog"
@@ -9,11 +10,19 @@ import { useAdminEvents } from "../../context/AdminEventsContext"
 import api from "../../services/mockapi"
 
 export default function FormData() {
+  // Mengambil fungsi setEvents dari context untuk menambahkan event baru
   const { setEvents } = useAdminEvents()
+
+  // State untuk membuka / menutup dialog
   const [open, setOpen] = React.useState(false)
+
+  // State loading saat submit data
   const [isLoading, setIsLoading] = React.useState(false)
+
+  // State untuk menyimpan pesan error
   const [error, setError] = React.useState<string | null>(null)
 
+  // State untuk menampung seluruh data form
   const [form, setForm] = React.useState({
     name: "",
     category: "",
@@ -24,14 +33,15 @@ export default function FormData() {
     image: "",
   })
 
+  // Fungsi untuk menangani perubahan input form
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target
     setForm((s) => ({ ...s, [name]: value }))
   }
 
-  // Ubah menjadi function biasa, bukan form handler
+  // Fungsi submit data (bukan form submit bawaan HTML)
   async function handleSubmit() {
-    // Validasi form
+    // Validasi: nama event wajib diisi
     if (!form.name.trim()) {
       setError("Nama event harus diisi")
       return
@@ -43,6 +53,7 @@ export default function FormData() {
     console.log("Form submitted:", form)
 
     try {
+      // Menyiapkan data event sebelum dikirim ke API
       const eventData = {
         name: form.name,
         category: form.category,
@@ -55,10 +66,12 @@ export default function FormData() {
 
       console.log("Sending to API:", eventData)
 
+      // Mengirim data ke endpoint /events
       const responseData: any = await api.post("/events", eventData)
       
       console.log("Response from API:", responseData)
 
+      // Membentuk objek event baru dari response API
       const newEvent = {
         id: responseData.id,
         name: responseData.name,
@@ -72,37 +85,50 @@ export default function FormData() {
 
       console.log("New event:", newEvent)
 
+      // Menambahkan event baru ke state global
       setEvents((prev) => [newEvent, ...prev])
+
+      // Menutup dialog
       setOpen(false)
+
+      // Mereset form ke kondisi awal
       setForm({ name: "", category: "", date: "", price: "", location: "", description: "", image: "" })
       
       console.log("Success!")
     } catch (err: any) {
+      // Menangani error jika request gagal
       console.error("Error creating event:", err)
       setError(err.response?.data?.message || err.message || "Gagal membuat event. Silakan coba lagi.")
     } finally {
+      // Menghentikan loading
       setIsLoading(false)
     }
   }
 
   return (
+    // Komponen dialog utama
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
+        {/* Tombol untuk membuka dialog */}
         <Button>Buat Event</Button>
       </DialogTrigger>
       
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Buat Event Baru</DialogTitle>
-          <DialogDescription>Masukkan data event baru di form berikut lalu klik simpan.</DialogDescription>
+          <DialogDescription>
+            Masukkan data event baru di form berikut lalu klik simpan.
+          </DialogDescription>
         </DialogHeader>
 
+        {/* Menampilkan pesan error jika ada */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
           </div>
         )}
 
+        {/* Form input data event */}
         <div className="grid gap-4 py-2">
           <div className="grid gap-2">
             <Label htmlFor="name">Nama</Label>
@@ -141,10 +167,12 @@ export default function FormData() {
         </div>
 
         <DialogFooter>
+          {/* Tombol batal untuk menutup dialog */}
           <Button variant="outline" type="button" onClick={() => setOpen(false)} disabled={isLoading}>
             Batal
           </Button>
-          {/* Gunakan onClick langsung di button */}
+
+          {/* Tombol simpan yang memanggil handleSubmit */}
           <Button type="button" onClick={handleSubmit} disabled={isLoading}>
             {isLoading ? "Menyimpan..." : "Simpan"}
           </Button>
